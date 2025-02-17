@@ -21,169 +21,180 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCompositionContext
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.workclass.ui.screens.MainMenuScreen
-import com.example.workclass.ui.theme.WorkClassTheme
+import com.example.workclass.ui.screens.HomeScreens
+import com.example.workclass.ui.screens.MainMenuScreens
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-       // enableEdgeToEdge()
+        //enableEdgeToEdge()
         setContent {
-            WorkClassTheme {
-                ComposeMultiscreenApp()
-              /* Column (){
-                  Column() {
-                      TextComposable("Miguel")
-                      TextComposable()
-                      TextComposable()
-                      TextComposable()
-                  }
-                    Row() {
-                        TextComposable()
-                        TextComposable()
-                        TextComposable()
-                        TextComposable()
-                    }
-                    Column() {
-                        ModifierExample2()
-                    }
-                }*/
-            }
+            ComposableMultiScreenApp()
+
         }
     }
 
-
     @Preview(showBackground = true)
+
     @Composable
-    fun TextComposable(name:String = "Empty"){
-        Text("Welcome ")
+    fun TextComposable(name: String = "Empty") {
+        Text("Hello World")
         Text(name)
     }
 
     @Preview(showBackground = true)
     @Composable
-    fun ModifierExample1(){
+    fun ModifierExample1() {
         Column(
             modifier = Modifier
-                .padding(40.dp,30.dp,20.dp,10.dp)
+                .padding(50.dp, 30.dp, 20.dp, 10.dp)
         ) {
-            Text("Hellow World")
+
+            Text("Hello World")
         }
     }
 
     @Preview(showBackground = true)
     @Composable
-    fun ModifierExample2(){
+    fun ModifierExample2() {
         Column(
             modifier = Modifier
-                .padding(24.dp)
-                // es para el maximo de la pantalla
+                .padding(20.dp)
                 .fillMaxWidth()
-                .clickable(onClick = {clickAction() })
+                .clickable(onClick = { clickAction() })
         ) {
-            Text("Hellow World")
+
+            Text("Hello World")
         }
     }
 
-    fun clickAction (){
+    fun clickAction() {
         println("Column Clicked")
     }
 
     @Preview(showBackground = true)
     @Composable
-    fun ModifierExample3(){
+    fun ModifierExample3() {
+
         Column(
             modifier = Modifier
-                // es para el maximo de altura de la pantalla
                 .fillMaxHeight()
                 .padding(16.dp)
-                .background(Color.Red)
-                .border(width = 2.dp, color = Color.Blue)
+                .background(Color.Yellow)
+                .border(width = 2.dp, color = Color.Green)
                 .width(200.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly
+
         ) {
             TextComposable("1")
             TextComposable("2")
             TextComposable("3")
             TextComposable("4")
+            TextComposable("5")
+            TextComposable("6")
         }
     }
 
     @Preview(showBackground = true)
     @Composable
     fun ModifierExample4() {
-        //dos maneras de acceder a los modifiers
-        //1,. con una variable, 2.-  con modifier.propiedad
         Box(
             modifier = Modifier
                 .background(Color.Cyan)
                 .padding(10.dp)
-                .width(300.dp)
                 .height(300.dp)
-        ){
-            Text("1",Modifier.align(Alignment.TopStart))
-            Text("2",Modifier.align(Alignment.TopCenter))
-            Text("3",Modifier.align(Alignment.TopEnd))
-            Text("4",Modifier.align(Alignment.CenterStart))
-            Text("5",Modifier.align(Alignment.Center))
-            Text("6",Modifier.align(Alignment.CenterEnd))
-            Text("7",Modifier.align(Alignment.BottomStart))
-            Text("8",Modifier.align(Alignment.BottomCenter))
-            Text("9",Modifier.align(Alignment.BottomEnd))
+                .width(300.dp)
+
+        ) {
+            Text("1", Modifier.align(Alignment.TopStart))
+            Text("2", Modifier.align(Alignment.TopCenter))
+            Text("3", Modifier.align(Alignment.TopEnd))
+            Text("4", Modifier.align(Alignment.CenterStart))
+            Text("5", Modifier.align(Alignment.Center))
+            Text("6", Modifier.align(Alignment.CenterEnd))
+            Text("7", Modifier.align(Alignment.BottomStart))
+            Text("8", Modifier.align(Alignment.BottomCenter))
+            Text("9", Modifier.align(Alignment.BottomEnd))
         }
     }
 
     @Preview(showBackground = true)
     @Composable
-    fun picture (){
-        Column (
+    fun CustomText() {
+        Column() {
+            Text(
+                stringResource(R.string.Example_Text),
+                color = colorResource(R.color.teal_700),
+                fontSize = 20.sp,
+                fontStyle = FontStyle.Italic,
+                fontWeight = FontWeight.ExtraBold
+            )
+            val gradientcolors =
+                listOf(Color.Blue, Color.Green, Color.Cyan, colorResource(R.color.purple_200))
+            Text(
+                stringResource(R.string.Example_Text),
+                style = TextStyle(brush = Brush.linearGradient(colors = gradientcolors))
+            )
+        }
+        val gradientcolors =
+            listOf(Color.Blue, Color.Green, Color.Cyan, colorResource(R.color.purple_200))
+        Text(
+            stringResource(R.string.Example_Text),
+            style = TextStyle(brush = Brush.linearGradient(colors = gradientcolors))
+        )
+    }
+
+    @Preview(showBackground = true)
+    @Composable
+    fun Picture() {
+        Column(
             modifier = Modifier
-                .fillMaxHeight()
-                .background(Color.Black)
+                .fillMaxWidth()
+                .background(Color.LightGray)
                 .height(300.dp)
-            ) {
+        ) {
             Image(
                 modifier = Modifier
                     .fillMaxWidth(),
-                        painter = painterResource(R.drawable.o),
-                contentDescription = "o",
-                contentScale = ContentScale.Fit
+                painter = painterResource(R.drawable.o),
+                contentDescription = "Imagen O"
 
             )
-
         }
-
     }
-
-} // Close Class
+}
 
 @Composable
-fun ComposeMultiscreenApp(){
+fun ComposableMultiScreenApp() {
     val navController = rememberNavController()
     SetupNavGraph(navController = navController)
-
-
 }
+
 @Composable
-fun SetupNavGraph(navController : NavHostController){
-    NavHost(navController = navController, startDestination = "main_menu"){
-
-        composable("main_menu") { MainMenuScreen (navController) }
-
+fun SetupNavGraph(navController: NavHostController) {
+    NavHost(navController = navController, startDestination = "Main_Menu") {
+        composable("Main_Menu") { MainMenuScreens(navController) }
+        composable("Home_Screens") { HomeScreens(navController) }
     }
-
 }
 
