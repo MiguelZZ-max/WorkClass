@@ -40,8 +40,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.workclass.ui.screens.CarControlScreen
 import com.example.workclass.ui.screens.HomeScreens
 import com.example.workclass.ui.screens.MainMenuScreens
+import com.example.workclass.ui.screens.ScreenNissan
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -195,6 +197,7 @@ fun SetupNavGraph(navController: NavHostController) {
     NavHost(navController = navController, startDestination = "Main_Menu") {
         composable("Main_Menu") { MainMenuScreens(navController) }
         composable("Home_Screens") { HomeScreens(navController) }
+        composable("ScreenNissan") { ScreenNissan(navController) }
     }
 }
 
