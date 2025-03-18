@@ -1,6 +1,7 @@
 package com.example.workclass.ui.screens
 
-import androidx.compose.foundation.*
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,7 +9,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Button
@@ -23,25 +25,30 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.workclass.R
 
 @Composable
-fun HomeScreens(navController: NavHostController) {
+fun HomeScreen(navController: NavHostController){
     topbar()
     Column(
-        modifier = Modifier
+        modifier = Modifier.padding(10.dp)
             .fillMaxSize()
-            .padding(0.dp,60.dp,0.dp,0.dp)
+            .padding(0.dp, 60.dp, 0.dp, 0.dp)
             .verticalScroll(rememberScrollState())
-
-    ) {
+    ){
+        Content1()
+        Content2()
+        Content1()
+        Content2()
         Content1()
         Content2()
     }
 }
+@Preview(showBackground = true)
 @Composable
 fun Content1(){
     Card(
@@ -60,7 +67,7 @@ fun Content1(){
                 .fillMaxWidth()
                 .height(200.dp),
             painter = painterResource(R.drawable.o),
-            contentDescription = "o",
+            contentDescription = "matrix",
             contentScale = ContentScale.Crop
         )
         Text(
@@ -72,6 +79,7 @@ fun Content1(){
     }
 }
 
+@Preview(showBackground = true)
 @Composable
 fun Content2(){
     Card(
@@ -79,21 +87,22 @@ fun Content2(){
             .fillMaxWidth()
             .padding(5.dp)
     ){
-        Row (
+        Row(
 
         ){
             Image(
                 modifier = Modifier
-                    .width(80.dp)
-                    .height(100.dp),
+                    .fillMaxWidth()
+                    .height(200.dp),
                 painter = painterResource(R.drawable.o),
                 contentDescription = "matrix",
                 contentScale = ContentScale.Crop
             )
-            Column (
+            Column(
 
             ){
-                Text (text = "This is a title",
+                Text(
+                    text = "This is a title",
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier
@@ -104,13 +113,15 @@ fun Content2(){
                     textAlign = TextAlign.Justify,
                     lineHeight = 14.sp,
                     fontSize = 10.sp,
-                    modifier = Modifier.padding(10.dp)
+                    modifier = Modifier
+                        .padding(10.dp)
                 )
             }
         }
     }
 }
 
+@Preview(showBackground = true)
 @Composable
 fun topbar(){
     Row (
@@ -130,8 +141,7 @@ fun topbar(){
         Text(
             stringResource(R.string.app_name),
             color = Color.White,
-            fontSize = 30.sp,
-
+            fontSize = 30.sp
         )
     }
 }
