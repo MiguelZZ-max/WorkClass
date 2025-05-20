@@ -8,37 +8,41 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 
+
 @Composable
-fun MainMenuScreens (navController:NavHostController) {
+fun MainMenuScreen(navController: NavHostController) {
     Column(
         modifier = Modifier
             .padding(10.dp)
             .fillMaxSize()
-    )
-    {
-        Text("Home Screens")
+    ) {
+        Text("Main Menu")
         Button(
-            onClick = { navController.navigate("Home_Screens") }
+            onClick = { navController.navigate("Home_Screen") }
         ) {
-            Text("Go to Home Screens")
+            Text("Go to Home Screen")
         }
-
-
-        Text("Test Screen")
         Button(
             onClick = { navController.navigate("TestScreen") }
         ) {
-            Text("Go to Test Screen" )
+            Text("Go to Test Screen")
+        }
+        Button(
+            onClick = {
+                navController.navigate("ComponentsScreen")
+
+            }
+        ) {
+            Text("Go to Components Screen")
         }
 
-        Text("ScreenNissan")
         Button(
             onClick = { navController.navigate("ScreenNissan") }
         ) {
             Text("Go to ScreenNissan" )
         }
-
     }
 }
