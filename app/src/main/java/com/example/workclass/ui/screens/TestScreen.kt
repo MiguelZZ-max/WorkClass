@@ -1,5 +1,5 @@
 package com.example.workclass.ui.screens
-
+import android.graphics.Picture
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -14,8 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -32,84 +30,86 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.example.workclass.R
 
 @Composable
-fun TestScreen(navController: NavController) {
-    Column(
-        modifier = Modifier
+fun TestScreen (navController: NavHostController){
+    Column (
+        modifier =  Modifier
             .padding(2.dp)
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-    ) {
-        Column() {
-            Column() {
-                TextComposable("Renatta")
-                TextComposable()
-                TextComposable()
-                TextComposable()
-            }
-            Row() {
-                TextComposable()
-                TextComposable()
-                TextComposable()
-                TextComposable()
-            }
-            Column() {
-                ModifierExample2()
-                ModifierExample4()
-                CustomText()
-                picture()
-            }
+    ){
+        Column {
+            // Se llaman a composables para mostrar texto
+            TextComposable("Roberto")
+            TextComposable("Pepe")
+            TextComposable("Lopez")
+            TextComposable("Juanito")
+        }
+        Row {
+            TextComposable()
+            TextComposable()
+            TextComposable()
+            TextComposable()
+        }
+        Column {
+            ModifierExample2()
+            ModifierExample4()
+            CustomText()
+            Picture()
         }
     }
-}
+
+    }
+
+// Composable que muestra un texto, con un nombre por defecto
 @Preview(showBackground = true)
 @Composable
 fun TextComposable(name: String = "Empty") {
     Text("Welcome")
     Text(name)
 }
-
+// Preview es para mostrar la función sin correr la app
 @Preview(showBackground = true)
 @Composable
 fun ModifierExample1() {
-    Column(
-        modifier = Modifier
-            .padding(40.dp, 30.dp, 20.dp, 10.dp)
-    ) {
-        Text("Hello World")
+    // Función que aplica un padding a un texto
+    Column(modifier = Modifier.padding(35.dp, 24.dp, 10.dp, 15.dp)) {
+        Text("Hello word")
     }
 }
 
-@Preview(showBackground = true)
+@Preview
 @Composable
 fun ModifierExample2() {
+    // Función que añade padding, ocupa el ancho máximo, permite clics y cambia el fondo
     Column(
         modifier = Modifier
             .padding(24.dp)
             .fillMaxWidth()
             .clickable(onClick = { clickAction() })
+
     ) {
-        Text("Hello World")
+        Text(text = "Hello word")
     }
 }
 
+// Función que se ejecuta al hacer clic
 fun clickAction() {
-    println("Column Clicked")
+    println(":) onClick")
 }
 
 @Preview(showBackground = true)
 @Composable
 fun ModifierExample3() {
+    // Función que crea una columna con altura completa, padding, fondo, borde y alineaciones
     Column(
         modifier = Modifier
+            .background(Color.Cyan)
             .fillMaxHeight()
-            .padding(16.dp)
-            .background(Color.Green)
-            .border(width = 2.dp, color = Color.Blue)
+            .padding(25.dp)
+            .border(width = 2.dp, color = Color.Black)
             .width(200.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceEvenly
@@ -117,6 +117,7 @@ fun ModifierExample3() {
         TextComposable("1")
         TextComposable("2")
         TextComposable("3")
+
         TextComposable("4")
     }
 }
@@ -124,12 +125,14 @@ fun ModifierExample3() {
 @Preview(showBackground = true)
 @Composable
 fun ModifierExample4() {
+    //dos maneras de acceder a los modifiers
+    //1,. con una variable, 2.-  con modifier.propiedad
     Box(
         modifier = Modifier
-            .background(Color.Red)
+            .background(Color.Cyan)
             .padding(10.dp)
-            .height(300.dp)
             .width(300.dp)
+            .height(300.dp)
     ) {
         Text("1", Modifier.align(Alignment.TopStart))
         Text("2", Modifier.align(Alignment.TopCenter))
@@ -148,35 +151,34 @@ fun ModifierExample4() {
 fun CustomText() {
     Column() {
         Text(
-            stringResource(R.string.Example_Text),
-            color = colorResource(R.color.purple_200),
+            stringResource(R.string.app_name),
+            color = colorResource(R.color.purple_500),
             fontSize = 20.sp,
             fontStyle = FontStyle.Italic,
             fontWeight = FontWeight.ExtraBold
         )
         val gradientColors =
-            listOf(Color.Red, colorResource(R.color.purple_200), Color.Blue, Color.Green)
+            listOf(Color.Gray, Color.Magenta, colorResource(R.color.purple_200))
         Text(
-            stringResource(R.string.Example_Text),
+            stringResource(R.string.app_name),
             style = TextStyle(brush = Brush.linearGradient(colors = gradientColors))
         )
     }
 }
-
 @Preview(showBackground = true)
 @Composable
 fun picture() {
     Column(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
             .background(Color.Black)
             .height(300.dp)
-
     ) {
         Image(
+            painter = painterResource(R.drawable.amogus),
+            contentDescription = "Amongus",
             modifier = Modifier.fillMaxWidth(),
-            painter = painterResource(R.drawable.o),
-            contentDescription = "matrix",
-            contentScale = ContentScale.FillHeight
+            contentScale = ContentScale.Fit
         )
     }
 }

@@ -1,7 +1,10 @@
+// build.gradle (nivel de módulo app)
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -10,8 +13,8 @@ android {
 
     defaultConfig {
         applicationId = "com.example.workclass"
-        minSdk = 24
-        targetSdk = 35
+        minSdk = 26
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
@@ -27,20 +30,32 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
     kotlinOptions {
         jvmTarget = "11"
     }
+
     buildFeatures {
         compose = true
     }
+
+    packagingOptions {
+        resources {
+            excludes += setOf(
+                "META-INF/DEPENDENCIES",
+                "META-INF/INDEX.LIST",
+                "META-INF/io.netty.versions.properties"
+            )
+        }
+    }
 }
-
 dependencies {
-
+    // Compose y UI
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -51,7 +66,12 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.adaptive.android)
-    implementation(libs.androidx.window.core.android)
+    implementation("androidx.compose.material3:material3:1.2.0")
+    implementation("androidx.compose.material:material:1.6.0")
+    implementation(libs.firebase.appdistribution.gradle)
+    implementation(libs.androidx.media3.common.ktx)
+
+    // Pruebas
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -59,4 +79,44 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    // Coil para imágenes
+    implementation(libs.coil.compose)
+
+    // CameraX
+    val cameraxVersion = "1.3.1"
+    implementation(libs.androidx.camera.core)
+    implementation(libs.androidx.camera.camera2)
+    implementation(libs.androidx.camera.lifecycle)
+    implementation(libs.androidx.camera.view)
+    implementation(libs.androidx.navigation.compose.v277)
+    implementation(libs.accompanist.permissions)
+    implementation(libs.androidx.camera.video)
+    implementation(libs.coil.compose.v222)
+
+    // Retrofit y JSON
+    implementation(libs.retrofit2.kotlinx.serialization.converter)
+    implementation(libs.retrofit)
+    implementation(libs.okhttp)
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.converter.gson)
+
+    // ✅ WorkManager (tareas en segundo plano)
+    implementation("androidx.work:work-runtime-ktx:2.9.0")
+    implementation(libs.androidx.work.runtime.ktx)
+    implementation (libs.androidx.work.runtime)
+
+    implementation (libs.androidx.biometric)
+    implementation("androidx.fragment:fragment-ktx:1.6.2")
+
+    // ✅ Core KTX para notificaciones
+    implementation("androidx.core:core-ktx:1.12.0")
+
+    // Lifecycle
+    implementation(libs.androidx.lifecycle.runtime.ktx.v262)
+    // Room
+    val room_version = "2.6.1"
+    implementation(libs.androidx.room.runtime)
+    implementation("androidx.room:room-ktx:$room_version")
+    ksp("androidx.room:room-compiler:$room_version")
 }

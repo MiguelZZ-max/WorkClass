@@ -12,14 +12,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+    primary = BlueGray800,
+    secondary = BlueGray300,
+    tertiary = Pink80,
+    background = BlueGray900,
+    surface = BlueGray800
+
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
+    primary = BlueGray100,
+    secondary = BlueGray900,
     tertiary = Pink40
 
     /* Other default colors to override
@@ -34,7 +37,7 @@ private val LightColorScheme = lightColorScheme(
 )
 
 @Composable
-fun WorkClassTheme(
+fun WorkclassTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,

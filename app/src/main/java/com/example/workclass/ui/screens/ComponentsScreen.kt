@@ -1,9 +1,11 @@
 package com.example.workclass.ui.screens
-
-import android.app.AlertDialog
+import android.icu.util.Calendar
+import android.widget.DatePicker
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,32 +14,33 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Build
-import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
@@ -45,10 +48,9 @@ import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -62,20 +64,13 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.InputChip
 import androidx.compose.material3.InputChipDefaults
 import androidx.compose.material3.LargeFloatingActionButton
-import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.SnackbarHost
@@ -83,105 +78,76 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
-import androidx.compose.material3.pulltorefresh.PullToRefreshState
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
-import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.NavController
-import androidx.navigation.NavHostController
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.semantics.Role.Companion.Switch
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import androidx.window.core.layout.WindowHeightSizeClass
 import androidx.window.core.layout.WindowWidthSizeClass
 import com.example.workclass.R
-import com.example.workclass.data_model.MenuModel
-import com.example.workclass.data_model.PostCardModel
+import com.example.workclass.data.model.MenuModel
+import com.example.workclass.data.model.PostCardModel
 import com.example.workclass.ui.components.PostCardCompactComponent
 import com.example.workclass.ui.components.PostCardComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.jetbrains.annotations.ApiStatus
-import java.util.logging.Filter
 
-
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.detectVerticalDragGestures
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.composed
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-
-
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ComponentsScreen (navController: NavController){
+fun ComponentsScreen(navController: NavHostController){
 
-    val menuOptions= arrayOf(
-        MenuModel(1,"Buttons", "buttons", Icons.Filled.AddCircle), //arreglo de un elemento basado en un modelo
-        MenuModel(2,"Floating Buttons", "floating_buttons", Icons.Filled.Add),
-        MenuModel(3,"Progress", "progress", Icons.Filled.Check),
-        MenuModel(4,"Chips", "chips", Icons.Filled.Email),
-        MenuModel(5,"Sliders", "sliders", Icons.Filled.ShoppingCart),
-        MenuModel(6,"Switches", "switches", Icons.Filled.Warning),
-        MenuModel(7,"Badges", "badges", Icons.Filled.Menu),
-        MenuModel(8,"Snack Bars", "snack_bars", Icons.Filled.Create),
-        MenuModel(9,"Alert Dialog", "alert_dialog", Icons.Filled.Notifications),
-        MenuModel(10,"Bars", "bars", Icons.Filled.CheckCircle),
-        MenuModel(11,"Input Fields", "input_fields", Icons.Filled.Favorite),
-        MenuModel(12,"Date Pickers", "date_pickers", Icons.Filled.Call),
-        MenuModel(13,"Pull To Refresh", "pull_to_refresh", Icons.Filled.DateRange),
-        MenuModel(14,"Bottom Sheets", "bottom_sheets", Icons.Filled.Home),
-        MenuModel(15,"Segmented Buttons", "segmented_buttons", Icons.Filled.Person)
+val menuOption = arrayOf(
+    MenuModel(1,"Buttons","Buttons", Icons.Filled.ThumbUp),
+    MenuModel(2,"Floating buttons","FloatingButtons", Icons.Filled.Build),
+    MenuModel(3,"Progress","Progress", Icons.Filled.Refresh),
+    MenuModel(4,"Chips","Chips", Icons.Filled.Person),
+    MenuModel(5,"Sliders","Sliders", Icons.Filled.List),
+    MenuModel(6,"Switches","Switches", Icons.Filled.Person),
+    MenuModel(7,"Badges","Badges", Icons.Filled.ShoppingCart),
+    MenuModel(8,"SnackBars","SnackBars", Icons.Filled.Email),
+    MenuModel(9,"AlertDialogs","AlertDialogs", Icons.Filled.Warning),
+    MenuModel(9,"Bars","Bars", Icons.Filled.Menu),
+    MenuModel(10,"InputFields","InputFields", Icons.Filled.AddCircle),
+    MenuModel(11,"DatePickers","DatePickers", Icons.Filled.DateRange),
+    MenuModel(12,"BottomSheets","BottomSheets", Icons.Filled.Person),
+    MenuModel(12,"SegmentedButtons","SegmentedButtons", Icons.Filled.CheckCircle),
 
-
-
-
-    )
-
-    var option by rememberSaveable { mutableStateOf("buttons") } //guardar la opcion que elige
-    var drawerState = rememberDrawerState(initialValue =DrawerValue.Closed )
+)
+    var option by rememberSaveable{ mutableStateOf("")}
+    var drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     var scope = rememberCoroutineScope()
-
-    ModalNavigationDrawer (
+    ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
             ModalDrawerSheet {
                 Text("Menú", modifier = Modifier.padding(16.dp))
                 HorizontalDivider()
                 LazyColumn {
-                    items(menuOptions) { item ->
+                    items(menuOption) { item ->
                         NavigationDrawerItem(
-                            icon = {
-                                Icon(item.icon, contentDescription = "Icon")
-                            },
+                            icon = { Icon(item.icon, contentDescription = "") },
                             label = { Text(item.title) },
                             selected = false,
                             onClick = {
@@ -192,214 +158,89 @@ fun ComponentsScreen (navController: NavController){
                                     }
                                 }
                             }
+
                         )
                     }
                 }
             }
         }
     ) {
+       Column {
+           when(option){
+               "Buttons"->{
+                   Buttons()
+               }
+               "FloatingButtons"->{
+                   FloatingButtons()
+               }
+               "Progress"->{
+                   Progress()
+               }
+               "Chips"->{
+                  Chips()
+               }
+               "Sliders"->{
+                 Sliders()
+               }
+               "Switches"->{
+                Switches()
+               }
+               "Badges"->{
+                   Badges()
+               }
+               "SnackBars"->{
+                   SnackBars()
+               }
+               "AlertDialogs"->{
+                   AlertDialogs()
+               }
+               "Bars"->{
+                   Bars()
+               }
+               "InputFields"->{
+                   Inputfields()
+               }
+               "DatePickers"->{
+                   DatePick()
+               }
+               "BottomSheets"->{
+                   bottomSheets()
+               }
+               "SegmentedButtons"->{
+                   SegmentedButton()
+               }
 
-        Column{
-            when(option){
-                "buttons" -> {
-                    Buttons()
-                }
-                "floating_buttons" -> {
-                    FloatingButtons()
-                }
-                "progress" -> {
-                    Progress()
-                }
-                "chips" ->{
-                    Chips()
-                }
-                "sliders" -> {
-                    Sliders()
-                }
-                "switches" -> {
-                    Switches()
-                }
-                "badges" -> {
-                    Badges()
-                }
-                "snack_bars" -> {
-                    SnackBars()
-                }
-                "alert_dialogs" -> {
-                    AlertDialogs()
-                }
-                "bars" -> {
-                    Bars()
-                }
-                "input_fields" -> {
-                    InputFields()
 
-                }
-                "date_pickers" -> {
-                    DatePickers(onDateSelected = { selectedDate ->
-
-                        println("Fecha seleccionada: $selectedDate")
-                    },
-                        onDismiss = {
-
-                            println("DatePicker cerrado")
-                        })
-
-                }
-                "segmented_buttons" -> {
-                    SegmentedButtons()
-                }
-                "bottom_sheets"->{
-                    BottomSheet()
-                }
-                "pull_to_refresh"-> {
-                    PullToRefresh()
-                }
-            }
-        }
-
+           }
+       }
     }
 }
-
-
-
-@Composable
-fun PullToRefresh() {
-    var isRefreshing by remember { mutableStateOf(false) }
-    val coroutineScope = rememberCoroutineScope()
-    var offsetY by remember { mutableStateOf(0f) }
-
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.LightGray)
-            .pullToRefresh(
-                isRefreshing = isRefreshing,
-                onRefresh = {
-                    coroutineScope.launch {
-                        isRefreshing = true
-                        delay(2000) // Simula la carga
-                        isRefreshing = false
-                        offsetY = 0f
-                    }
-                },
-                onDragChange = { delta ->
-                    if (!isRefreshing) {
-                        offsetY += delta
-                        if (offsetY > 120f) offsetY = 120f // Limite de arrastre
-                    }
-                }
-            ),
-        contentAlignment = Alignment.TopCenter
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.Top
-        ) {
-            if (isRefreshing || offsetY > 30f) {
-                CircularProgressIndicator(
-                    modifier = Modifier
-                        .padding(16.dp)
-                        .align(Alignment.CenterHorizontally)
-                )
-            }
-
-            repeat(20) {
-                Text(
-                    text = "Elemento $it",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                        .background(Color.White)
-                )
-            }
-        }
-    }
-}
-
-/**
- * Extensión para detectar el gesto de "pull-to-refresh"
- */
-fun Modifier.pullToRefresh(
-    isRefreshing: Boolean,
-    onRefresh: () -> Unit,
-    onDragChange: (Float) -> Unit
-) = composed {
-    pointerInput(isRefreshing) {
-        detectVerticalDragGestures(
-            onVerticalDrag = { _, dragAmount ->
-                onDragChange(dragAmount)
-            },
-            onDragEnd = {
-                if (!isRefreshing) {
-                    onRefresh()
-                }
-            }
-        )
-    }
-}
-
-
-
-/*
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun PullToRefresh() {
-    val refreshState = rememberPullToRefreshState()
-    var isRefreshing by remember { mutableStateOf(false) }
-    val items = remember { (0..40).toList() }
-    val coroutineScope= rememberCoroutineScope()
-    PullToRefreshBox(
-        state=refreshState,
-        isRefreshing=isRefreshing,
-        onRefresh={
-            coroutineScope.launch {
-                isRefreshing= true
-                delay(3000)
-                isRefreshing=false
-            }
-        }
-    ){
-        LazyColumn {
-            items(items){
-                ListItem(
-                    headlineContent = {
-                        Text("Item $it")
-                    }
-                )
-            }
-        }
-    }
-
-}
-*/
 
 @Preview(showBackground = true)
 @Composable
 fun Buttons(){
-    Column (
-        modifier = Modifier
-            .fillMaxSize(),
+    // This function displays various types of Material Design buttons.
+    // Esta función muestra varios tipos de botones de Material Design.
+
+    Column(
+        modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
-    ){
-
-        Button(onClick = {}) {
-            Text("Filled")
+    ) {
+        Button(onClick = {}){ // Standard filled button
+            Text("Filled") // Botón estándar relleno
         }
-        FilledTonalButton(onClick = {}) {
-            Text("Tonal")
+        FilledTonalButton(onClick = {}){ // Button with a tonal fill
+            Text("Tonal") // Botón con relleno tonal
         }
-        OutlinedButton(onClick = {}) {
-            Text("Outlined")
+        OutlinedButton (onClick = {}){ // Button with an outline border
+            Text("Outlined") // Botón con borde contorneado
         }
-        ElevatedButton(onClick = {}) {
-            Text("Elevated")
+        ElevatedButton(onClick = {}){ // Button with an elevation effect
+            Text("Elevated") // Botón con efecto de elevación
         }
-        TextButton(onClick = {}) {
-            Text("Text")
+        TextButton(onClick = {}){ // Button with just text (no border or fill)
+            Text("Text") // Botón solo con texto (sin borde ni relleno)
         }
     }
 }
@@ -407,140 +248,138 @@ fun Buttons(){
 @Preview(showBackground = true)
 @Composable
 fun FloatingButtons() {
+    // This function displays different types of floating action buttons.
+    // Esta función muestra diferentes tipos de botones flotantes de acción.
     Column(
-        modifier = Modifier
-            .fillMaxSize(),
+        modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
     ) {
-        FloatingActionButton(onClick = {}) {
-            Icon(Icons.Filled.Add,
-                contentDescription = "Add Button")
+        FloatingActionButton(onClick = {}) { // Standard floating action button
+            Icon(Icons.Filled.Add,"Add button") // Ícono de añadir en el botón flotante estándar
         }
-        SmallFloatingActionButton(onClick = {}) { //este boton es mas pequeño que el primero
-            Icon(Icons.Filled.Add,
-                contentDescription = "Add Button")
+        SmallFloatingActionButton(onClick = {}) { // Smaller floating action button
+            Icon(Icons.Filled.Add,"Add button") // Ícono de añadir en el botón flotante pequeño
         }
-        LargeFloatingActionButton(onClick = {}) { //este es mas grande
-            Icon(Icons.Filled.Add,
-                contentDescription = "Add Button")
+        LargeFloatingActionButton(onClick = {}) { // Larger floating action button
+            Icon(Icons.Filled.Add,"Add button") // Ícono de añadir en el botón flotante grande
         }
-        ExtendedFloatingActionButton(onClick = {}) { //rectangulo mas grande
-            Icon(Icons.Filled.Add,
-                contentDescription = "Add Button")
-            Text("Button")
+        ExtendedFloatingActionButton(onClick = {}) { // Extended floating action button with icon
+            Icon(Icons.Filled.Add,"Add button") // Ícono de añadir en el botón flotante extendido
         }
+    }
+}
+@Preview(showBackground = true)
+@Composable
+fun Progress() {
+    // This function displays progress indicators.
+    // Esta función muestra indicadores de progreso.
 
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.SpaceEvenly
+    ) {
+        LinearProgressIndicator(
+            modifier = Modifier.fillMaxWidth() // Full-width linear progress indicator
+        ) // Indicador de progreso lineal de ancho completo
+        CircularProgressIndicator(
+            modifier = Modifier.width(64.dp) // Circular progress indicator with specified width
+        ) // Indicador de progreso circular con ancho especificado
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun Progress() {
-    Column(
-        modifier = Modifier
-            .fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceEvenly
-    ) {
-        LinearProgressIndicator(
-            modifier = Modifier
-                .fillMaxWidth()
-        )
-        CircularProgressIndicator(
-            modifier = Modifier
-                .width(64.dp)
-        )
-    }
-}
-@Preview(showBackground = true) //sirve para presentar informacion
-@Composable
 fun Chips() {
+    // This function displays different types of chip components.
+    // Esta función muestra diferentes tipos de chips.
+
     Column(
-        modifier = Modifier
-            .fillMaxSize(),
+        modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceEvenly
     ) {
         AssistChip(
             onClick = {},
-            label= { Text("Assist Chip")},
+            label = { Text("Assist Chip") },
             leadingIcon = {
                 Icon(Icons.Filled.AccountBox,
                     contentDescription = "Assist Chip",
-                    modifier = Modifier
-                        .size(AssistChipDefaults.IconSize))
+                    modifier = Modifier.size(AssistChipDefaults.IconSize)
+                )
             }
         )
         var selected by remember { mutableStateOf(false) }
         FilterChip(
-            selected =selected ,
-            onClick = {selected= !selected },
-            label = {Text("Filter Chip")},
-            leadingIcon =if (selected){
+            selected = selected,
+            onClick = {selected = !selected},
+            label = { Text("Filter Chip") },
+            leadingIcon = if (selected){
                 {
                     Icon(Icons.Filled.AccountBox,
-                        contentDescription = "Assist Chip",
-                        modifier = Modifier
-                            .size(AssistChipDefaults.IconSize)
+                        contentDescription = "Assist chip",
+                        modifier = Modifier.size(AssistChipDefaults.IconSize)
                     )
                 }
-            } else {
+            }else{
                 null
             }
         )
-        InputChipExample("Dismiss",{})
+        InputChipExample("Dismiss",{}) // Example of an input chip
     }
 }
 
 @Composable
 fun InputChipExample(
     text: String,
-    onDismiss:() -> Unit
+    onDismiss: ()-> Unit
 ){
+    // This function defines an input chip with a dismiss action.
+    // Esta función define un chip de entrada con una acción de eliminación.
+
     var enabled by remember { mutableStateOf(true) }
     if (!enabled) return
 
     InputChip(
-        label= { Text(text)},
+        label = { Text(text)},
         selected = enabled,
         onClick = {
             onDismiss()
             enabled = !enabled
         },
-        avatar= {
-            Icon(
-                Icons.Filled.Person,
-                contentDescription = "Icon Person",
+        avatar = {
+            Icon(Icons.Filled.Person, contentDescription = "Icon Person",
                 Modifier.size(InputChipDefaults.AvatarSize)
             )
         },
-        trailingIcon ={
-            Icon(
-                Icons.Filled.Close,
-                contentDescription = "Close Person",
+        trailingIcon = {
+            Icon(Icons.Filled.Close, contentDescription = "Close Icon",
                 Modifier.size(InputChipDefaults.AvatarSize)
             )
         }
     )
 }
+
 @Preview(showBackground = true)
 @Composable
-fun Sliders() {
+fun Sliders(){
+    // This function displays a slider for selecting a value.
+    // Esta función muestra un control deslizante para seleccionar un valor.
+
     Column(
-        modifier = Modifier
-            .fillMaxSize(),
+        modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceEvenly
+        verticalArrangement = Arrangement.SpaceBetween
     ) {
         var SliderPosition by remember { mutableStateOf(50f) }
         Slider(
             value = SliderPosition,
-            onValueChange = {SliderPosition= it },
+            onValueChange = {SliderPosition = it},
             steps = 10,
-            valueRange = 0f..100f
+            valueRange = 0f .. 100f
         )
-        Text (
+        Text(
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth(),
             text = SliderPosition.toString()
@@ -550,394 +389,341 @@ fun Sliders() {
 
 @Preview(showBackground = true)
 @Composable
-fun Switches() {
+fun Switches(){
+    // This function displays switches and checkboxes.
+    // Esta función muestra interruptores y casillas de verificación.
+
     Column(
-        modifier = Modifier
-            .fillMaxSize(),
+        modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceEvenly
-    ) {
-        var checked by remember { mutableStateOf(true) }
+        verticalArrangement = Arrangement.SpaceBetween
+    ){
+        var checked by remember { mutableStateOf(true)}
         Switch(
             checked = checked,
-            onCheckedChange = { checked = it }
+            onCheckedChange = {checked = it}
         )
-
         var checked2 by remember { mutableStateOf(true) }
         Switch(
             checked = checked2,
-            onCheckedChange = { checked2 = it },
-            thumbContent = if (checked2){
+            onCheckedChange = {checked2 = it},
+            thumbContent = if(checked2){
                 {
-                    Icon (
-                        Icons.Filled.Check,
-                        contentDescription = "Icon Check",
+                    Icon(Icons.Filled.Check,
+                        contentDescription = "Switch check",
                         Modifier.size(InputChipDefaults.AvatarSize)
                     )
                 }
-            } else {
-                null
-            }
+            } else null
         )
         var checked3 by remember { mutableStateOf(true) }
         Checkbox(
             checked = checked3,
-            onCheckedChange = {checked3= it}
+            onCheckedChange = {checked3 = it}
         )
     }
 }
-
-
+//@Preview(showBackground = true)
 @Composable
-fun Badges() { //iconos de mensajes sin leer o notificaciones
+fun Badges() {
+    // This function displays Badges.
     Column(
-        modifier = Modifier
-            .fillMaxSize(),
+        modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceEvenly
-    )
-    {
-        var itemCount by remember { mutableStateOf(0) }
+    ) {
+var itemCount by remember { mutableStateOf(0) }
         BadgedBox(
             badge = {
-                if (itemCount > 0){
+                if(itemCount>0){
                     Badge(
-                        containerColor = Color.Red,
-                        contentColor = Color.White
+                        contentColor = Color.White,
+                        containerColor = Color.Red
                     ){
-                        Text(itemCount.toString())
+                            Text(itemCount.toString())
                     }
                 }
             }
         ) {
             Icon(
                 imageVector = Icons.Filled.ShoppingCart,
-                contentDescription = "Shopping cart icon"
+                contentDescription = "shopping car icon"
             )
         }
-        Button(
-            onClick = {itemCount++}
-        ) {
+        Button(onClick = {itemCount++}) {
             Text("Add item")
         }
     }
 }
-
+@Preview(showBackground = true)
 @Composable
-fun SnackBars() { //Barra de notificacion cuando hacemos una accion
+fun SnackBars() {
+    // This function displays SnackBars.
     Column(
-        modifier = Modifier
-            .fillMaxSize(),
+        modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceEvenly
     ) {
-        val snackState = remember { SnackbarHostState() } //guarda el estado de si se esta mostrando o no
-        val snackScope = rememberCoroutineScope() //controla cuanto tiempo se queda en pantalla
-
-        SnackbarHost(hostState = snackState)
-
-        fun launchSnackBar (){
-            snackScope.launch { snackState.showSnackbar("The message has been sent") }
-        }
-
+      val snackState = remember { SnackbarHostState() }
+        val snackScope = rememberCoroutineScope()
+SnackbarHost(hostState = snackState)
+    fun launchSnackBar(){
+snackScope.launch { snackState.showSnackbar("The message has been send") }
+     }
         Button(::launchSnackBar) {
             Text("Send message")
         }
     }
-}
-
+    }
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AlertDialogs() { //Lanza un mensaje y al mismo tiempo nos pide una confirmacion y no desaparece  hasta elegir la accion
+fun AlertDialogs() {
     Column(
         modifier = Modifier
             .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceEvenly
-    ) {
+        verticalArrangement = Arrangement.SpaceBetween
+
+    ){
         var showAlertDialog by remember { mutableStateOf(false) }
         var selectedOption by remember { mutableStateOf("") }
 
-        if (showAlertDialog){
+        if(showAlertDialog){
             AlertDialog(
-                icon= { Icon (Icons.Filled.Warning, contentDescription = "Warning Icon")},
-                title = {Text ("Confirm Deletion")},
-                text = {Text("Are you sure you want to delete this file?")},
-                onDismissRequest ={},
+                icon = { Icon(Icons.Filled.Warning, contentDescription = "Icon Warning") },
+                title = { Text(text= "Confirm Deletion") },
+                text = { Text(text = "Are u sure u want delete this file") },
+
+                onDismissRequest = {},
                 confirmButton = {
                     TextButton(
                         onClick = {
-                            selectedOption = "Confirmed"
+                            selectedOption = "Confirm"
                             showAlertDialog = false
                         }
                     ) {
-                        Text("Yes")
+                        Text(text = "Yes")
                     }
                 },
-                dismissButton = {
+                dismissButton =  {
                     TextButton(
                         onClick = {
-                            selectedOption = "Canceled"
+                            selectedOption = "Cancelado"
                             showAlertDialog = false
                         }
                     ) {
-                        Text("No")
+                        Text(text = "No")
+                    }
+                }
+
+            )
+        }
+        Button(onClick ={showAlertDialog= true}){
+            Text(text = "Borrar Archivo")
+        }
+        Text(selectedOption)
+    }
+}
+@Preview(showBackground = true)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
+@Composable
+fun Bars() {
+    // Estado de la recarga
+    var isRefreshing by remember { mutableStateOf(false) }
+
+    // Estado del PullRefresh
+    val refreshState = rememberPullRefreshState(
+        refreshing = isRefreshing,
+        onRefresh = {
+            isRefreshing = true
+            // Simular una carga de datos
+            CoroutineScope(Dispatchers.Main).launch {
+                delay(2000) // Simula una carga de datos
+                isRefreshing = false
+            }
+        }
+    )
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .pullRefresh(refreshState)
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            // Barra superior
+            TopAppBar(
+                colors = TopAppBarDefaults.topAppBarColors(
+                    titleContentColor = Color.White,
+                    containerColor = Color.Black
+                ),
+                title = { Text("Screen title") },
+                actions = {
+                    IconButton(onClick = {}) {
+                        Icon(imageVector = Icons.Filled.Search, contentDescription = "")
+                    }
+                    IconButton(onClick = {}) {
+                        Icon(imageVector = Icons.Filled.Settings, contentDescription = "")
                     }
                 }
             )
-        }
 
-        Button (onClick = { showAlertDialog=true}) {
-            Text("Delete file")
-        }
-        Text (selectedOption)
+            // Contenido dentro del Pull to Refresh
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxSize()
+            ) {
+                Adaptive()
+            }
 
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun Bars(){
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-    ){
-        LargeTopAppBar(
-            colors= TopAppBarDefaults.topAppBarColors(
-                containerColor = MaterialTheme.colorScheme.primary,
-                titleContentColor = MaterialTheme.colorScheme.secondary
-            ),
-            title = {Text("Screen Title")},
-            actions = {
-                IconButton(onClick ={} ) {
-                    Icon(imageVector = Icons.Filled.Search, contentDescription = "Icon")
+            // Barra inferior
+            BottomAppBar(
+                containerColor = Color.DarkGray,
+                contentColor = Color.White
+            ) {
+                IconButton(modifier = Modifier.weight(1f), onClick = {}) {
+                    Icon(imageVector = Icons.Filled.Warning, contentDescription = "")
                 }
-                IconButton(onClick = {}) {
-                    Icon(imageVector = Icons.Filled.Settings, contentDescription = "Icon 2" )
+                IconButton(modifier = Modifier.weight(1f), onClick = {}) {
+                    Icon(imageVector = Icons.Filled.Settings, contentDescription = "")
+                }
+                IconButton(modifier = Modifier.weight(1f), onClick = {}) {
+                    Icon(imageVector = Icons.Filled.Home, contentDescription = "")
+                }
+                IconButton(modifier = Modifier.weight(1f), onClick = {}) {
+                    Icon(imageVector = Icons.Filled.Person, contentDescription = "")
+                }
+                IconButton(modifier = Modifier.weight(1f), onClick = {}) {
+                    Icon(imageVector = Icons.Filled.Create, contentDescription = "")
                 }
             }
+        }
+
+        // Indicador de recarga
+        PullRefreshIndicator(
+            refreshing = isRefreshing,
+            state = refreshState,
+            modifier = Modifier.align(Alignment.TopCenter)
         )
-        val arrayPost= arrayOf(
-            PostCardModel(1,"Title 1", "Text 1", R.drawable.o),
-            PostCardModel(2,"Title 2", "Text 2", R.drawable.o),
-            PostCardModel(3,"Title 3", "Text 3", R.drawable.o),
-            PostCardModel(4,"Title 4", "Text 4", R.drawable.o),
-            PostCardModel(5,"Title 5", "Text 5", R.drawable.o),
-            PostCardModel(6,"Title 6", "Text 6", R.drawable.o),
-            PostCardModel(7,"Title 7", "Text 7", R.drawable.o),
-            PostCardModel(8,"Title 8", "Text 8", R.drawable.o),
-            PostCardModel(9,"Title 9", "Text 9", R.drawable.o)
-
-        )
-        LazyHorizontalGrid(
-            rows = GridCells.Adaptive(minSize = 100.dp),
-            modifier = Modifier
-                .fillMaxSize()
-                .weight(1f)
-        ){
-            items(arrayPost){ item ->
-                PostCardCompactComponent(item.id,item.title,item.text,item.image) //parametros agregados en el PostComponent
-            }
-        }
-
-        Column (
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxSize()
-        ){
-            Adaptive()
-
-        }
-
-
-
-        BottomAppBar (
-            containerColor = Color.Gray,
-            contentColor = Color.Black
-        ){
-            IconButton(
-                modifier = Modifier.weight(1f),
-                onClick = {},
-
-                ) {
-                Icon (imageVector = Icons.Filled.Person, contentDescription = "")
-            }
-            IconButton(
-                modifier = Modifier.weight(1f),
-                onClick = {},
-
-                ) {
-                Icon (imageVector = Icons.Filled.Search, contentDescription = "")
-            }
-            IconButton(
-                modifier = Modifier.weight(1f),
-                onClick = {},
-
-                ) {
-                Icon (imageVector = Icons.Filled.AccountBox, contentDescription = "")
-            }
-            IconButton(
-                modifier = Modifier.weight(1f),
-                onClick = {},
-
-                ) {
-                Icon (imageVector = Icons.Filled.Close, contentDescription = "")
-            }
-            IconButton(
-                modifier = Modifier.weight(1f),
-                onClick = {},
-
-                ) {
-                Icon (imageVector = Icons.Filled.Build, contentDescription = "")
-            }
-        }
-
     }
 }
 
 @Composable
-fun Adaptive (){
-    var windowSize = currentWindowAdaptiveInfo().windowSizeClass
+fun Adaptive(){
+    var windowsSize =currentWindowAdaptiveInfo().windowSizeClass
     var height = currentWindowAdaptiveInfo().windowSizeClass.windowHeightSizeClass
     var width = currentWindowAdaptiveInfo().windowSizeClass.windowWidthSizeClass
-    //Compact width < 600 dp Phone Portrait (parado)
-    //Medium width >= 600 dp < 840 dp Tablet Portrait (parada)
-    //Expanded width >= 840 dp Tablet Landscape (acostada)
+    //Compact Width < 600 dp Phone Portrait
+    //Medium Width >= 600 dp <840 dp Tablet Portrait
+    //Expanded Width >= 840 dp Tablet Landscape
 
-    //Compact height < 480 dp Phone Landscape (acostado)
-    //Medium height >= 480 dp < 900 dp Tablet Landscape o Phone Portrait (acostado)
-    //Expanded height >= 900 dp Tablet Portrait (parada)
+    //Compact Height < 480 dp phone landscape
+    //Medium Height >= 480 dp <900 dp tablet landscape or phone portrait
+    //Expanded Height >= 900 dp tablet portrait
 
-    val arrayPost= arrayOf(
-        PostCardModel(1,"Title 1", "Text 1", R.drawable.o),
-        PostCardModel(2,"Title 2", "Text 2", R.drawable.o),
-        PostCardModel(3,"Title 3", "Text 3", R.drawable.o),
-        PostCardModel(4,"Title 4", "Text 4", R.drawable.o),
-        PostCardModel(5,"Title 5", "Text 5", R.drawable.o),
-        PostCardModel(6,"Title 6", "Text 6", R.drawable.o),
-        PostCardModel(7,"Title 7", "Text 7", R.drawable.o),
-        PostCardModel(8,"Title 8", "Text 8", R.drawable.o),
-        PostCardModel(9,"Title 9", "Text 9", R.drawable.o)
-
+    val arrayPosts = arrayOf(
+        PostCardModel(1,"title1","text", R.drawable.amogus),
+        PostCardModel(2,"title2","text 2", R.drawable.amogus),
+        PostCardModel(3,"title3","text 3", R.drawable.amogus),
+        PostCardModel(4,"title4","text 4", R.drawable.amogus),
+        PostCardModel(5,"title5","text 5", R.drawable.amogus),
+        PostCardModel(6,"title6","text 6", R.drawable.amogus),
+        PostCardModel(7,"title7","text 7", R.drawable.amogus),
+        PostCardModel(8,"title8","text 8", R.drawable.amogus),
+        PostCardModel(9,"title9","text 9", R.drawable.amogus),
     )
-    if (width == WindowWidthSizeClass.COMPACT){
+    if(width == WindowWidthSizeClass.COMPACT){
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-        ){
-            items(arrayPost){ item ->
-                PostCardCompactComponent(item.id,item.title,item.text,item.image) //parametros agregados en el PostComponent
-                //ejemplo de pull to refresh
-
+        ) {
+            items(arrayPosts){ item ->
+                PostCardComponent(item.id, item.title, item.text, item.iamge)
             }
         }
     } else if (height == WindowHeightSizeClass.COMPACT){
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-        ){
-            items(arrayPost){ item ->
-                PostCardCompactComponent(item.id,item.title,item.text,item.image) //parametros agregados en el PostComponent
+        ) {
+            items(arrayPosts){ item ->
+                PostCardCompactComponent(item.id, item.title, item.text, item.iamge)
             }
         }
     }
 }
-
-
-
-
+@Preview(showBackground = true)
 @Composable
-fun InputFields (){
+fun Inputfields(){
     var text by remember { mutableStateOf("") }
 
-    OutlinedTextField(
+    TextField(
         value = text,
-        onValueChange = {text=it},
-        label = {Text("Label")}
+        onValueChange = { text = it },
+        label = { Text("Ingrese texto") },
+        modifier = Modifier.fillMaxWidth().padding(16.dp),
+
     )
 }
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DatePickers( // modal
-    onDateSelected: (Long?) -> Unit,
-    onDismiss: () -> Unit
-) {
-    val datePickerState = rememberDatePickerState()
+fun DatePick() {
+    val context = LocalContext.current
+    val calendar = Calendar.getInstance()
 
-    DatePickerDialog(
-        onDismissRequest = onDismiss,
-        confirmButton = {
-            TextButton(onClick = {
-                onDateSelected(datePickerState.selectedDateMillis)
-                onDismiss()
-            }) {
-                Text("OK")
-            }
+    val year = calendar.get(Calendar.YEAR)
+    val month = calendar.get(Calendar.MONTH)
+    val day = calendar.get(Calendar.DAY_OF_MONTH)
+
+    var selectedDate by remember { mutableStateOf("") }
+
+    val datePickerDialog = android.app.DatePickerDialog(
+        context,
+        { _: DatePicker, y: Int, m: Int, d: Int ->
+            selectedDate = "$d/${m + 1}/$y"
         },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Cancel")
-            }
-        }
+        year, month, day
+    )
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        DatePicker(state = datePickerState)
-    }
-}
+        Text(
+            text = if (selectedDate.isNotEmpty()) "Fecha seleccionada: $selectedDate" else "No hay fecha seleccionada",
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(8.dp)
+        )
 
-
-
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun SegmentedButtons(modifier: Modifier = Modifier) {
-    var selectedIndex by remember { mutableIntStateOf(0) }
-    val options = listOf("Day", "Month", "Week")
-
-    SingleChoiceSegmentedButtonRow {
-        options.forEachIndexed { index, label ->
-            SegmentedButton(
-                shape = SegmentedButtonDefaults.itemShape(
-                    index = index,
-                    count = options.size
-                ),
-                onClick = { selectedIndex = index },
-                selected = index == selectedIndex,
-                label = { Text(label) }
-            )
+        Button(onClick = { datePickerDialog.show() }) {
+            Text("Seleccionar Fecha")
         }
     }
 }
-
-
-
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BottomSheet() {
+fun bottomSheets(){
     val sheetState = rememberModalBottomSheetState()
-    val scope = rememberCoroutineScope()
-    var showBottomSheet by remember { mutableStateOf(false) }
+    val showSheet = remember { mutableStateOf(false) }
 
-    Scaffold(
-        floatingActionButton = {
-            ExtendedFloatingActionButton(
-                text = { Text("Show bottom sheet") },
-                icon = { Icon(Icons.Filled.Add, contentDescription = "") },
-                onClick = {
-                    showBottomSheet = true
-                }
-            )
-        }
-    ) { contentPadding ->
-        Box(modifier = Modifier.padding(contentPadding)) {
-            Text("Pantalla principal")
+    // Pantalla principal con botón para abrir el Bottom Sheet
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Button(onClick = { showSheet.value = true }) {
+            Text("Abrir Bottom Sheet")
         }
     }
 
-
-    if (showBottomSheet) {
+    // Modal Bottom Sheet
+    if (showSheet.value) {
         ModalBottomSheet(
-            onDismissRequest = { showBottomSheet = false },
+            onDismissRequest = { showSheet.value = false },
             sheetState = sheetState
         ) {
             Column(
@@ -946,18 +732,66 @@ fun BottomSheet() {
                     .padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(text = "Este es un BottomSheet")
-                Spacer(modifier = Modifier.height(16.dp))
-                Button(onClick = {
-                    scope.launch { sheetState.hide() }.invokeOnCompletion {
-                        if (!sheetState.isVisible) {
-                            showBottomSheet = false
-                        }
-                    }
-                }) {
+                Text("Hola buenas tardes", style = MaterialTheme.typography.bodyLarge)
+                Spacer(modifier = Modifier.height(10.dp))
+                Button(onClick = { showSheet.value = false }) {
                     Text("Cerrar")
                 }
             }
         }
+    }
+}
+@Preview(showBackground = true)
+@Composable
+fun SegmentedButton() {
+    var selectedSegment by remember { mutableStateOf(0) }
+    val options = listOf("Opción 1", "Opción 2", "Opción 3")
+    val images = listOf(
+        painterResource(id = R.drawable.img_1),
+        painterResource(id = R.drawable.amogus),
+        painterResource(id = R.drawable.gato)
+    )
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally)
+        ) {
+            options.forEachIndexed { index, option ->
+                Button(
+                    onClick = { selectedSegment = index },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (selectedSegment == index) Color.DarkGray else Color.LightGray
+                    ),
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(option, color = Color.White, fontSize = 16.sp)
+                }
+            }
+        }
+        Spacer(modifier = Modifier.height(20.dp))
+        Image(
+            painter = images[selectedSegment],
+            contentDescription = "Imagen de ${options[selectedSegment]}",
+            modifier = Modifier
+                .size(200.dp)
+                .clip(RoundedCornerShape(16.dp))
+        )
+        Spacer(modifier = Modifier.height(10.dp))
+        Text(
+            text = "Seleccionaste: ${options[selectedSegment]}",
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.Black
+        )
     }
 }

@@ -1,5 +1,4 @@
 package com.example.workclass.ui.screens
-
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -10,39 +9,46 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
-
-
 @Composable
-fun MainMenuScreen(navController: NavHostController) {
-    Column(
-        modifier = Modifier
-            .padding(10.dp)
-            .fillMaxSize()
+fun MainMenuScreen(navController: NavHostController){
+    Column(modifier = Modifier
+        .padding(10.dp)
+        .fillMaxSize()
     ) {
-        Text("Main Menu")
-        Button(
-            onClick = { navController.navigate("Home_Screen") }
+        //Botón que sirve para navegar a HomeScreen
+        Button(onClick = {navController.navigate("Home_Screen")}
         ) {
-            Text("Go to Home Screen")
+            Text("GO TO HOME SCREEN")
         }
-        Button(
-            onClick = { navController.navigate("TestScreen") }
+        Button(onClick = {navController.navigate("Test_Screen")}
         ) {
-            Text("Go to Test Screen")
+            Text("GO TO TEST SCREEN")
         }
-        Button(
-            onClick = {
-                navController.navigate("ComponentsScreen")
+        Button(onClick = {navController.navigate("Instagram_Screen")}
+        ) {
+            Text("GO TO INSTAGRAM CLONE")
+        }
+        Button(onClick = {navController.navigate("Components_Screen")}
+        ) {
+            Text("GO TO COMPONENTS SCREEN")
+        }
+        Button(onClick = {navController.navigate("Login_screen")}
+        ) {
+            Text("GO TO LOGIN SCREEN")
+        }
+        Button(onClick = {navController.navigate("camara")}
+        ) {
+            Text("GO TO API CAMERA")
+        }
+        Button(onClick = {navController.navigate("pantalla")}
+        ) {
+            Text("GO TO API NOTIFICATION")
+        }
+        Button(onClick = {navController.navigate("biometric_screen")}
+        ) {
+            Text("GO TO API BIOMETRICS")
+        }
 
-            }
-        ) {
-            Text("Go to Components Screen")
-        }
-
-        Button(
-            onClick = { navController.navigate("ScreenNissan") }
-        ) {
-            Text("Go to ScreenNissan" )
-        }
     }
 }
+
